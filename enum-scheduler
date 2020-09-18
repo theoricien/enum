@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+
+cyan = 		'\033[1;32m'
+red = 		'\033[1;31m'
+yellow = 	'\033[0;33m'
+none = 		'\033[0m'
+
+# SERVICE = [PORTS]
+ftp = 	["21"]
+http = 	["80", "8000", "8080", "5985"]
+https = ["443", "8443", "8081", "5986"]
+smb = 	["445"]
+snmp = 	["161", "162"]
+
+def check_args (ac, av):
+	if ac != 3:
+		print(red + "Usage: enum-scheduler <IP> \"port1,port2,port3,...,portN\"")
+		sys.exit(2)
+
+def schedule (ip, port):
+	if port in ftp:
+		os.system("/home/baguette/bin/enum-ftp {}".format(ip))
+	elif port in http:
+		os.system("/home/baguette/bin/enum-http {} {}".format(ip, port))
+	elif port in https:
+		os.system("/home/baguette/bin/enum-https {} {}".format(ip, port))
+	elif port in smb:
+		os.system("/home/baguette/bin/enum-smb {}".format(ip))
+	elif port in snmp:
+		os.system("/home/baguette/bin/enum-snmp {}".format(ip))
+
+def main (argc, argv):
+	check_args(argc, argv)
+	
+	os.setuid(0)
+	os.setgid(0)	
+
+	ip = argv[1]
+	ports = argv[2].split(',')
+
+	print(red + "ports: {}".format(ports))
+
+	for port in ports:
+		schedule(ip, port)
+
+if __name__ == '__main__':
+	main(len(sys.argv), sys.argv)

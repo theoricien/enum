@@ -1,0 +1,28 @@
+#!/usr/bin/python
+import sys
+import os
+import re
+
+ext = "xml"
+regex = r"(\d+)/"
+
+script_dict = {'445': "--script smb-vuln* --script smb-enum*",
+		'80': "--script http-vuln* --script http-shellshock",
+		'443': "--script http-vuln* --script http-shellshock"}
+
+def main ():
+	flags = " "
+	file = open("nmap/ports.nmap", "r")
+	data = file.read()
+	# print(data)
+	ports = re.findall(regex, data)
+	ip = re.findall(r"Warning: ([0-9\.]+) giving", data)[0]
+	for p in ports:
+		if p in script_dict.keys() and script_dict[p] not in flags:
+			flags += script_dict[p] + ' '
+	payload = "sudo nmap -sS -sC -sV -T4 -A -v -p " + ",".join([p for p in ports if int(p) < 47001]) + flags + " -oA nmap/scan " + ip
+	# YES, AND WHAT R U GONNA DO M8 ?!
+	os.system(payload)
+
+if __name__ == '__main__':
+	main()

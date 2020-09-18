@@ -1,0 +1,21 @@
+ #!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir nmap 2>/dev/null
+
+touch ./nmap/ports
+touch ./nmap/ports-raw
+touch ./nmap/scheduler
+
+echo -e "${cyan}==========( Open Ports )==========" | tee -a ./nmap/ports
+echo -e "${red}nmap -p- --max-scan-delay 5s --min-rate 1000 --max-retries 5000 -sS \$1 | grep \"^[0-9]*\\/.*\" > nmap/ports${none}" | tee -a ./nmap/ports
+nmap -v -p- --max-scan-delay 5s --min-rate 1000 --max-retries 5000 -sS $1 2<&1 > ./nmap/ports-raw
+
+cat ./nmap/ports-raw | grep "^[0-9]*\/.*" | tee -a ./nmap/ports
+cat ./nmap/ports-raw | grep "^[0-9]*\/.*" | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//g' > ./nmap/scheduler
+
+echo -e "${none}" | tee -a ./nmap/ports

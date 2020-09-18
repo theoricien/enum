@@ -1,0 +1,2 @@
+#!/bin/bash
+echo 'a' | sudo -S /home/baguette/bin/enumerate $*

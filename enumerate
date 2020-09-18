@@ -1,0 +1,25 @@
+#!/bin/env bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+if [ $# -eq 0 ]
+then
+	echo -e "${red} Usage example: enum 10.10.10.10"
+	exit
+fi
+
+# OS
+/home/baguette/bin/os $1
+
+/home/baguette/bin/enum-ports $1
+ports=$(cat nmap/scheduler | cut -d '/' -f 1 | tr '\n' ',' | sed s/,$//)
+
+python3 /home/baguette/bin/enum-scheduler $1 "$ports"
+
+echo -e "${cyan}==========( Done )=========="
+echo -e "${none}"
+
+exit

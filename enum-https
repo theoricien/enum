@@ -1,0 +1,49 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir https 2>/dev/null
+
+touch ./https/nmap$2
+echo -e "${cyan}==========( NMAP scripts $1:$2 )==========" 2>&1 | tee -a ./https/nmap$2
+echo -e "${red}nmap -sS -sC -sV -T4 -A -v -Pn -p $2 --script http-enum* --script http-vuln* --script ssl* --script http-shell* $1" 2>&1 | tee -a https/nmap$2
+echo -e "${yellow}"	2>&1 | tee -a ./https/nmap$2
+nmap -sS -sC -sV -T4 -A -v -Pn -p $2 \
+--script http-enum* \
+--script http-vuln* \
+--script http-methods \
+--script ssl* \
+--script http-shell* $1 2>&1 | tee -a ./https/nmap$2
+echo -e "${none}" 2>&1 | tee -a ./https/nmap$2
+
+
+headers="GET POST HEAD OPTIONS TRACE PUT DELETE MOVE CONNECT PROPFIND"
+
+touch ./https/options$2
+echo -e "${cyan}==========( OPTIONS $1:$2 )=========="	2>&1 | tee -a ./https/options$2
+echo -e "${yellow}"	2>&1 | tee -a ./https/options$2
+for method in $headers
+do
+	echo -ne "$method " 2>&1 | tee -a ./https/options$2
+	curl -k -X $method -D - https://$1:$2/ --silent >&1 | head -n 1 2>&1 | grep --color -P "200" | tee -a ./https/options$2
+done
+echo -e "${none}"	2>&1 | tee -a ./https/options$2
+
+
+touch ./https/http$2_gob
+EXTS="aspx,asp,txt,js,css,html,htm,pl,py,cgi,bin,exe,md,sh,bat,ps1,bak,old,cfm,jsp,php,inc,sql"
+echo -e "${cyan}==========( Gobuster on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_gob
+echo -e "${red}gobuster -u https://$1:$2/ -e -k -x $EXTS -w /home/baguette/wordlist/medlow.txt -s 200,301,302" 2>&1 | tee -a ./https/http$2_gob
+echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_gob
+gobuster -u https://$1:$2/ -e -k -x $EXTS -w /home/baguette/wordlist/medlow.txt -s 200,301	2>&1 | tee -a ./https/http$2_gob
+echo -e "${none}"	2>&1 | tee -a ./https/http$2_gob
+
+touch ./https/http$2_nikto
+echo -e "${cyan}==========( Nikto on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_nikto
+echo -e "${red}nikto -h https://$1:$2/"	2>&1 | tee -a ./https/http$2_nikto
+echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_nikto
+nikto -h https://$1:$2/	2>&1 | tee -a ./https/http$2_nikto
+echo -e "${none}"	2>&1 | tee -a ./https/http$2_nikto

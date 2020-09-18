@@ -1,0 +1,47 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir smb 2>/dev/null
+
+touch ./smb/nmap
+touch ./smb/map
+touch ./smb/e4l
+touch ./smb/nullinux
+touch ./smb/nbtscn
+
+echo -e "${cyan}==========( NMAP Script )==========" 2>&1 | tee -a ./smb/nmap
+echo -e "${red}nmap -sS -sV -sC -T4 -A -v -Pn -p 139,445 --script smb-enum* --script smb-vuln* $1" 2>&1 | tee -a ./smb/nmap
+echo -e "${yellow}" 2>&1 | tee -a ./smb/nmap
+nmap -sS -sV -sC -v -Pn -p 139,445 --script smb-enum* --script smb-vuln* $1 2>&1 | grep "^[\|0-9].*" | tee -a ./smb/nmap
+echo -e "${none}" 2>&1 | tee -a ./smb/nmap
+
+echo -e "${cyan}==========( SMB Listing Shares )==========" 2>&1 |tee -a ./smb/map
+echo -e "${red}smbmap -H $1 -u '' -p ''" 2>&1 |tee -a ./smb/map
+echo -e "${yellow}" 2>&1 |tee -a ./smb/map
+smbmap -H $1 -u '' -p '' 2>&1 |tee -a ./smb/map
+echo -e "${red}smbmap -H $1 -u 'guest' -p 'guest'${yellow}" 2>&1 |tee -a ./smb/map
+smbmap -H $1 -u 'guest' -p 'guest' 2>&1 |tee -a ./smb/map
+echo -e "${red}smbmap -H $1 -u 'anonymous' -p 'anonymous${yellow}" 2>&1 |tee -a ./smb/map
+smbmap -H $1 -u 'anonymous' -p 'anonymous' 2>&1 |tee -a ./smb/map
+echo -e "${red}echo \'\' | smbclient -L //$1/${yellow}" 2>&1 |tee -a ./smb/map
+echo '' | smbclient -L //$1/
+
+echo -e "${cyan}==========( SMB Enum w/ Enum4Linux )==========" 2>&1 |tee -a ./smb/e4l
+echo -e "${red}python3 /home/baguette/pentest/enum4linux-ng/enum4linux-ng.py $1" 2>&1 |tee -a ./smb/e4l
+python3 /home/baguette/pentest/enum4linux-ng/enum4linux-ng.py $1 2>&1 |tee -a ./smb/e4l
+echo -e "${none}" 2>&1 |tee -a ./smb/e4l
+
+echo -e "${cyan}==========( SMB Enum w/ Nullinux )==========" 2>&1 |tee -a ./smb/nullinux
+echo -e "${red}python3 /opt/nullinux/nullinux.py $1" 2>&1 |tee -a ./smb/nullinux
+python3 /opt/nullinux/nullinux.py $1 2>&1 |tee -a ./smb/nullinux
+echo -e "${none}" 2>&1 |tee -a ./smb/nullinux
+
+# echo -e "${cyan}==========( SMB Enum w/ nbtscan )==========" 2>&1 |tee -a ./smb/nbtscn
+# echo -e "${red}nbtscan -r $1/32" 2>&1 |tee -a ./smb/nbtscn
+# echo -e "${yellow}" 2>&1 |tee -a ./smb/nbtscn
+# nbtscan -r $1/32 2>&1 |tee -a ./smb/nbtscn
+# echo -e "${none}" 2>&1 |tee -a ./smb/nbtscn

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir ftp 2>/dev/null
+
+touch ./ftp/nmap
+echo -e "${cyan}==========( NMAP Script )==========" 2>&1 | tee -a ./ftp/nmap
+echo -e "${red}nmap -sS -sV -sC -T4 -A -v -Pn -p 21 --script ftp* $1" 2>&1 | tee -a ./ftp/nmap
+echo -e "${yellow}" 2>&1 | tee -a ./ftp/nmap
+
+nmap -sS -sV -sC -T4 -A -v -Pn -p 21 --script ftp* $1 2>&1 | tee -a ./ftp/nmap
+
+echo -e "${none}" 2>&1 | tee -a ./ftp/nmap

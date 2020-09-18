@@ -1,0 +1,21 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir snmp 2>/dev/null
+
+touch ./snmp/snmpwlk
+echo -e "${cyan}==========( SNMP Enumeration w/ SNMPWalk )==========" 2>&1 | tee -a ./snmp/snmpwlk
+echo -e "${red}snmpwalk -c public -v1 $1" 2>&1 | tee -a ./snmp/snmpwlk
+echo -e "${yellow}" 2>&1 | tee -a ./snmp/snmpwlk
+snmpwalk -c public -v1 $1 2>&1 | tee -a ./snmp/snmpwlk
+
+touch ./snmp/check
+echo -e "${cyan}==========( SNMP Enumeration w/ SNMP-Check )=========="  2>&1 | tee -a ./snmp/check
+echo -e "${red}snmp-check -t $1 -c public" 2>&1 | tee -a ./snmp/check
+echo -e "${yellow}" 2>&1 | tee -a ./snmp/check
+snmp-check -t $1 -c public 2>&1 | tee -a ./snmp/check
+echo -e "${none}" 2>&1 | tee -a ./snmp/check
