@@ -12,6 +12,6 @@ echo -e "${cyan}==========( NMAP Script )==========" 2>&1 | tee -a ./ftp/nmap
 echo -e "${red}nmap -sS -sV -sC -T4 -A -v -Pn -p 21 --script ftp* $1" 2>&1 | tee -a ./ftp/nmap
 echo -e "${yellow}" 2>&1 | tee -a ./ftp/nmap
 
-nmap -sS -sV -sC -T4 -A -v -Pn -p 21 --script ftp* $1 2>&1 | tee -a ./ftp/nmap
+$(which nmap) -sS -sV -sC -T4 -A -v -Pn -p 21 --script ftp* $1 2>&1 | tee -a ./ftp/nmap
 
 echo -e "${none}" 2>&1 | tee -a ./ftp/nmap

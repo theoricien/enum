@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir msrpc 2>/dev/null
+
+touch ./msrpc/all
+echo -e "${cyan}==========( RPCDump )==========" | tee -a ./msrpc/all
+echo -e "${red}rpcdump.py $1 -p $2" | tee -a ./msrpc/all
+echo -e "${yellow}"	2>&1 | tee -a ./msrpc/all
+$(locate rpcdump.py | head -n 1) $1 -p $2 | tee -a ./msrpc/all
+echo -e "${none}" | tee -a ./msrpc/all
+
+

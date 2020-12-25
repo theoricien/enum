@@ -1,0 +1,33 @@
+#!/bin/env bash
+
+# get hex colors
+#cyan=(xrdb -query |grep color14 |awk '{print $2}')
+#red=(xrdb -query |grep color9 |awk '{print $2}')
+#yellow=(xrdb -query |grep color11 |awk '{print $2}')
+
+cyan='\033[0;36m'
+red='\033[0;31m'
+yellow='\033[1;33m'
+
+if [ $# -eq 0 ]
+then
+	echo -e "${red} Usage example: getcert 10.10.10.171:443"
+	exit
+fi
+
+echo -e "${yellow}[*] Getting SSL Certificate on $1"
+echo ""
+echo -e "${cyan} ===========( SSL Cert )==========="
+echo -e "${red}openssl s_client -connect $1 2>/dev/null | sed -ne '/Server certificate/,/DONE/p'"
+echo -e "${yellow}" 2>&1
+# show ssl cert
+echo -n | $(which openssl) s_client -connect $1 2>/dev/null | sed -ne '/Server certificate/,/DONE/p'
+echo -e "${none}" 2>&1
+
+# show alternative names
+echo -e "${cyan} ===========( Alternative DNS )==========="
+echo -e "${red}openssl s_client -connect $1 2>/dev/null| openssl x509 -noout -text | grep DNS:"
+echo -e "${yellow}" 2>&1
+$(which openssl) s_client -connect $1 2>/dev/null| openssl x509 -noout -text | grep DNS:
+echo -e "${none}" 2>&1
+exit

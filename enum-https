@@ -20,30 +20,71 @@ nmap -sS -sC -sV -T4 -A -v -Pn -p $2 \
 echo -e "${none}" 2>&1 | tee -a ./https/nmap$2
 
 
-headers="GET POST HEAD OPTIONS TRACE PUT DELETE MOVE CONNECT PROPFIND"
+#headers="GET POST HEAD OPTIONS TRACE PUT DELETE MOVE CONNECT PROPFIND"
 
-touch ./https/options$2
-echo -e "${cyan}==========( OPTIONS $1:$2 )=========="	2>&1 | tee -a ./https/options$2
-echo -e "${yellow}"	2>&1 | tee -a ./https/options$2
-for method in $headers
-do
-	echo -ne "$method " 2>&1 | tee -a ./https/options$2
-	curl -k -X $method -D - https://$1:$2/ --silent >&1 | head -n 1 2>&1 | grep --color -P "200" | tee -a ./https/options$2
-done
-echo -e "${none}"	2>&1 | tee -a ./https/options$2
+#touch ./https/options$2
+#echo -e "${cyan}==========( OPTIONS $1:$2 )=========="	2>&1 | tee -a ./https/options$2
+#echo -e "${yellow}"	2>&1 | tee -a ./https/options$2
+#for method in $headers
+#do
+#	echo -ne "$method " 2>&1 | tee -a ./https/options$2
+#	curl -k -X $method -D - https://$1:$2/ --silent >&1 | head -n 1 2>&1 | grep --color -P "200" | tee -a ./https/options$2
+#done
+#echo -e "${none}"	2>&1 | tee -a ./https/options$2
 
 
-touch ./https/http$2_gob
+#touch ./https/http$2_gob
+#EXTS="aspx,asp,txt,js,css,html,htm,pl,py,cgi,bin,exe,md,sh,bat,ps1,bak,old,cfm,jsp,php,inc,sql"
+#echo -e "${cyan}==========( Gobuster on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_gob
+#echo -e "${red}gobuster -u https://$1:$2/ -e -k -x $EXTS -w /home/baguette/wordlist/medlow.txt -s 200,301,302" 2>&1 | tee -a ./https/http$2_gob
+#echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_gob
+#gobuster -u https://$1:$2/ -e -k -x $EXTS -w /home/baguette/wordlist/medlow.txt -s 200,301	2>&1 | tee -a ./https/http$2_gob
+#echo -e "${none}"	2>&1 | tee -a ./https/http$2_gob
+touch ./https/http$2_davt
+echo -e "${cyan}==========( DavTest on $1:$2 )==========" 2>&1 | tee -a ./https/http$2_davt
+echo -e "${red}davtest.pl -url https://$1:$2" 2>&1 | tee -a ./https/http$2_davt
+echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_davt
+(cd /opt/davtest; perl davtest.pl -url https://$1:$2) | tee -a ./https/http$2_davt
+echo -e "${none}"	2>&1 | tee -a ./https/http$2_davt
+
+touch ./https/http$2_cert
 EXTS="aspx,asp,txt,js,css,html,htm,pl,py,cgi,bin,exe,md,sh,bat,ps1,bak,old,cfm,jsp,php,inc,sql"
-echo -e "${cyan}==========( Gobuster on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_gob
-echo -e "${red}gobuster -u https://$1:$2/ -e -k -x $EXTS -w /home/baguette/wordlist/medlow.txt -s 200,301,302" 2>&1 | tee -a ./https/http$2_gob
-echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_gob
-gobuster -u https://$1:$2/ -e -k -x $EXTS -w /home/baguette/wordlist/medlow.txt -s 200,301	2>&1 | tee -a ./https/http$2_gob
-echo -e "${none}"	2>&1 | tee -a ./https/http$2_gob
+echo -e "${cyan}==========( GetCert on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_cert
+echo -e "${red}getcert $1:$2" 2>&1 | tee -a ./https/http$2_cert
+echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_cert
+/home/baguette/bin/getcert $1:$2 2>&1 | tee -a ./https/http$2_cert
+echo -e "${none}"	2>&1 | tee -a ./https/http$2_cert
 
 touch ./https/http$2_nikto
 echo -e "${cyan}==========( Nikto on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_nikto
-echo -e "${red}nikto -h https://$1:$2/"	2>&1 | tee -a ./https/http$2_nikto
+echo -e "${red}nikto -h https://$1:$2/ -C all"	2>&1 | tee -a ./https/http$2_nikto
 echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_nikto
-nikto -h https://$1:$2/	2>&1 | tee -a ./https/http$2_nikto
+nikto -h https://$1:$2/ -C all	2>&1 | tee -a ./https/http$2_nikto
 echo -e "${none}"	2>&1 | tee -a ./https/http$2_nikto
+
+iswp=$(curl https://$1:$2/wp-content -i --silent | head -n 1 | cut -d ' ' -f 2)
+if [ "$iswp" = "301" ]
+then
+	touch ./https/http$2_wp
+	echo -e "${cyan}==========( WPScan $1:$2 )=========="	2>&1 | tee -a ./https/http$2_wp
+	echo -e "${red}wpscan --url http://$1:$2/ -e ap,at,cb,tt,dbe,u,m" 2>&1 | tee -a ./https/http$2_wp
+	echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_wp
+	wpscan --url http://$1:$2/ -e ap,at,cb,tt,dbe,u,m 2>&1 | tee -a ./https/http$2_wp
+	echo -e "${none}"	2>&1 | tee -a ./https/http$2_wp
+fi
+
+touch ./https/http$2_gob
+EXTS="/,.aspx,.asp,.txt,.js,.css,.html,.htm,.pl,.py,.cgi,.bin,.exe,.md,.sh,.bat,.ps1,.bak,.old,.cfm,.jsp,.php,.inc,.sql,.pdf,.ini"
+echo -e "${cyan}==========( FFUF on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_gob
+echo -e "${red}ffuf -w /home/baguette/wordlist/top10k.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e $EXTS -c" 2>&1 | tee -a ./https/http$2_gob
+echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_gob
+/home/baguette/bin/ffuf -w /home/baguette/wordlist/top10k.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e $EXTS -c -v 2>&1 | tee -a ./https/http$2_gob
+echo -e "${none}"	2>&1 | tee -a ./https/http$2_gob
+
+touch ./https/http$2_full
+echo -e "${cyan}==========( FFUF on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_full
+echo -e "${red}ffuf -w /home/baguette/wordlist/medlow.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e / -c" 2>&1 | tee -a ./https/http$2_full
+echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_full
+/home/baguette/bin/ffuf -w /home/baguette/wordlist/medlow.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e / -c 2>&1 | tee -a ./http/https$2_full
+echo -e "${none}"	2>&1 | tee -a ./http/https$2_full
+

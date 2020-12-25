@@ -1,0 +1,46 @@
+#!/bin/bash
+# Usage: enum-file <file_name>
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir files 2>/dev/null
+
+touch ./files/$1.file
+echo -e "${cyan}==========( File Description )==========" 2>&1 | tee -a ./files/$1.file
+echo -e "${red}file $1" 2>&1 | tee -a ./files/$1.file
+echo -e "${yellow}"	2>&1 | tee -a ./files/$1.file
+$(which file) $1 2>&1 | tee -a ./files/$1.file
+echo -e "${none}" 2>&1 | tee -a ./files/$1.file
+
+touch ./files/$1.bwlk
+echo -e "${cyan}==========( Binwalk )==========" 2>&1 | tee -a ./files/$1.bwlk
+echo -e "${red}binwalk $1" 2>&1 | tee -a ./files/$1.bwlk
+echo -e "${yellow}"	2>&1 | tee -a ./files/$1.bwlk
+$(which binwalk) $1 2>&1 | tee -a ./files/$1.bwlk
+echo -e "${none}" 2>&1 | tee -a ./files/$1.bwlk
+
+touch ./files/$1.exif
+echo -e "${cyan}==========( Exiftool )==========" 2>&1 | tee -a ./files/$1.exif
+echo -e "${red}exiftool $1" 2>&1 | tee -a ./files/$1.exif
+echo -e "${yellow}"	2>&1 | tee -a ./files/$1.exif
+$(which exiftool) $1 2>&1 | tee -a ./files/$1.exif
+echo -e "${none}" 2>&1 | tee -a ./files/$1.exif
+
+touch ./files/$1.steg
+echo -e "${cyan}==========( Steghide )==========" 2>&1 | tee -a ./files/$1.steg
+echo -e "${red}steghide extract -sf $1 -p ''" 2>&1 | tee -a ./files/$1.steg
+echo -e "${yellow}"	2>&1 | tee -a ./files/$1.steg
+$(which steghide) extract -sf $1 -p '' 2>&1 | tee -a ./files/$1.steg
+echo -e "${none}" 2>&1 | tee -a ./files/$1.steg
+
+touch ./files/$1.strings
+echo -e "${cyan}==========( Strings )==========" 2>&1 | tee -a ./files/$1.strings
+echo -e "${red}strings -n 8 $1" 2>&1 | tee -a ./files/$1.strings
+echo -e "${yellow}"	2>&1 | tee -a ./files/$1.strings
+$(which strings) -n 8 $1 2>&1 | tee -a ./files/$1.strings
+echo -e "${none}" 2>&1 | tee -a ./files/$1.strings
+
+echo -e "${cyan}==========( Done )==========" 2>&1

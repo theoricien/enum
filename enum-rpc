@@ -1,0 +1,22 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir rpc 2>/dev/null
+
+touch ./rpc/all
+echo -e "${cyan}==========( RPCInfo )==========" | tee -a ./rpc/all
+echo -e "${red}rpcinfo $1" | tee -a ./rpc/all
+echo -e "${yellow}"	2>&1 | tee -a ./rpc/all
+$(which rpcinfo) $1 | tee -a ./rpc/all
+echo -e "${none}" | tee -a ./rpc/all
+
+touch ./rpc/showmount
+echo -e "${cyan}==========( Showmount )==========" | tee -a ./rpc/showmount
+echo -e "${red}showmount -e $1" | tee -a ./rpc/showmount
+echo -e "${yellow}"	2>&1 | tee -a ./rpc/showmount
+$(which showmount) -e $1 | tee -a ./rpc/showmount
+echo -e "${none}" | tee -a ./rpc/showmount

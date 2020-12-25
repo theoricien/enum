@@ -1,0 +1,31 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import ldap3
+import sys
+
+if len(sys.argv) != 4:
+	print("Usage: ldapinfo IP PORT SSL(True/False)")
+
+ip = sys.argv[1]
+port = int(sys.argv[2])
+ssl = False
+
+server = ldap3.Server(ip, get_info = ldap3.ALL, port=port, use_ssl = ssl)
+
+print("[*] Attempting connection..")
+for i in range(10):
+	try:
+		connection = ldap3.Connection(server)
+		if connection.bind() == True:
+			print("[*] Connected")
+			break
+	except:
+		print("[*] Connection failed")
+
+if connection.bind() == True:
+	print(server.info)
+else:
+	print("[*] Impossible to connect")
+	exit()
+

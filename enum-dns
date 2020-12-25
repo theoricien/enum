@@ -1,0 +1,30 @@
+#!/bin/bash
+
+cyan='\033[1;32m'
+red='\033[1;31m'
+yellow='\033[0;33m'
+none='\033[0m'
+
+mkdir dns 2>/dev/null
+
+touch ./dns/nmap
+echo -e "${cyan}==========( NMAP Scripts $1:$2 )==========" | tee -a ./dns/nmap
+echo -e "${red}nmap -sS -sC -sV -T4 -A -v -Pn -p $2 -n --script \"(default and *dns*) or fcrdns or dns-srv-enum or dns-random-txid or dns-random-srcport\" $1" | tee -a ./dns/nmap
+echo -e "${yellow}"	2>&1 | tee -a ./dns/nmap
+$(which nmap) -sS -sC -sV -T4 -A -v -Pn -p $2 -n --script "(default and *dns*) or fcrdns or dns-srv-enum or dns-random-txid or dns-random-srcport" $1 2>&1 | tee -a ./dns/nmap
+echo -e "${none}" | tee -a ./dns/nmap
+
+touch ./dns/zt
+echo -e "${cyan}==========( Zone Transfer )==========" | tee -a ./dns/zt
+echo -e "${red}dig axfr @$1" | tee -a ./dns/zt
+echo -e "${yellow}"	2>&1 | tee -a ./dns/zt
+$(which dig) axfr @$1 2>&1 | tee -a ./dns/zt
+echo -e "${none}" | tee -a ./dns/zt
+
+touch ./dns/infos
+echo -e "${cyan}==========( Any Information )==========" | tee -a ./dns/infos
+echo -e "${red}dig ANY @$1" | tee -a ./dns/infos
+echo -e "${yellow}"	2>&1 | tee -a ./dns/infos
+$(which dig) ANY @$1 2>&1 | tee -a ./dns/infos
+echo -e "${none}" | tee -a ./dns/infos
+
