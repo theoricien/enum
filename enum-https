@@ -9,14 +9,9 @@ mkdir https 2>/dev/null
 
 touch ./https/nmap$2
 echo -e "${cyan}==========( NMAP scripts $1:$2 )==========" 2>&1 | tee -a ./https/nmap$2
-echo -e "${red}nmap -sS -sC -sV -T4 -A -v -Pn -p $2 --script http-enum* --script http-vuln* --script ssl* --script http-shell* $1" 2>&1 | tee -a https/nmap$2
+echo -e "${red}nmap -sS -sC -sV -T4 -A -v -Pn -p $2 --script vuln $1" 2>&1 | tee -a https/nmap$2
 echo -e "${yellow}"	2>&1 | tee -a ./https/nmap$2
-nmap -sS -sC -sV -T4 -A -v -Pn -p $2 \
---script http-enum* \
---script http-vuln* \
---script http-methods \
---script ssl* \
---script http-shell* $1 2>&1 | tee -a ./https/nmap$2
+nmap -sS -sC -sV -T4 -A -v -Pn -p $2 --script vuln $1 2>&1 | tee -a ./https/nmap$2
 echo -e "${none}" 2>&1 | tee -a ./https/nmap$2
 
 
@@ -42,9 +37,9 @@ echo -e "${none}" 2>&1 | tee -a ./https/nmap$2
 #echo -e "${none}"	2>&1 | tee -a ./https/http$2_gob
 touch ./https/http$2_davt
 echo -e "${cyan}==========( DavTest on $1:$2 )==========" 2>&1 | tee -a ./https/http$2_davt
-echo -e "${red}davtest.pl -url https://$1:$2" 2>&1 | tee -a ./https/http$2_davt
+echo -e "${red}davtest -url https://$1:$2" 2>&1 | tee -a ./https/http$2_davt
 echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_davt
-(cd /opt/davtest; perl davtest.pl -url https://$1:$2) | tee -a ./https/http$2_davt
+$(which davtest) -url https://$1:$2 | tee -a ./https/http$2_davt
 echo -e "${none}"	2>&1 | tee -a ./https/http$2_davt
 
 touch ./https/http$2_cert
@@ -52,14 +47,14 @@ EXTS="aspx,asp,txt,js,css,html,htm,pl,py,cgi,bin,exe,md,sh,bat,ps1,bak,old,cfm,j
 echo -e "${cyan}==========( GetCert on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_cert
 echo -e "${red}getcert $1:$2" 2>&1 | tee -a ./https/http$2_cert
 echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_cert
-/home/baguette/bin/getcert $1:$2 2>&1 | tee -a ./https/http$2_cert
+$(which getcert) $1:$2 2>&1 | tee -a ./https/http$2_cert
 echo -e "${none}"	2>&1 | tee -a ./https/http$2_cert
 
 touch ./https/http$2_nikto
 echo -e "${cyan}==========( Nikto on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_nikto
 echo -e "${red}nikto -h https://$1:$2/ -C all"	2>&1 | tee -a ./https/http$2_nikto
 echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_nikto
-nikto -h https://$1:$2/ -C all	2>&1 | tee -a ./https/http$2_nikto
+$(which nikto) -h https://$1:$2/ -C all	2>&1 | tee -a ./https/http$2_nikto
 echo -e "${none}"	2>&1 | tee -a ./https/http$2_nikto
 
 iswp=$(curl https://$1:$2/wp-content -i --silent | head -n 1 | cut -d ' ' -f 2)
@@ -69,7 +64,7 @@ then
 	echo -e "${cyan}==========( WPScan $1:$2 )=========="	2>&1 | tee -a ./https/http$2_wp
 	echo -e "${red}wpscan --url http://$1:$2/ -e ap,at,cb,tt,dbe,u,m" 2>&1 | tee -a ./https/http$2_wp
 	echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_wp
-	wpscan --url http://$1:$2/ -e ap,at,cb,tt,dbe,u,m 2>&1 | tee -a ./https/http$2_wp
+	$(which wpscan) --url http://$1:$2/ -e ap,at,cb,tt,dbe,u,m 2>&1 | tee -a ./https/http$2_wp
 	echo -e "${none}"	2>&1 | tee -a ./https/http$2_wp
 fi
 
@@ -78,13 +73,12 @@ EXTS="/,.aspx,.asp,.txt,.js,.css,.html,.htm,.pl,.py,.cgi,.bin,.exe,.md,.sh,.bat,
 echo -e "${cyan}==========( FFUF on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_gob
 echo -e "${red}ffuf -w /home/baguette/wordlist/top10k.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e $EXTS -c" 2>&1 | tee -a ./https/http$2_gob
 echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_gob
-/home/baguette/bin/ffuf -w /home/baguette/wordlist/top10k.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e $EXTS -c -v 2>&1 | tee -a ./https/http$2_gob
+$(which ffuf) -w /home/baguette/wordlist/top10k.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e $EXTS -c -v 2>&1 | tee -a ./https/http$2_gob
 echo -e "${none}"	2>&1 | tee -a ./https/http$2_gob
 
 touch ./https/http$2_full
 echo -e "${cyan}==========( FFUF on $1:$2 )=========="	2>&1 | tee -a ./https/http$2_full
 echo -e "${red}ffuf -w /home/baguette/wordlist/medlow.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e / -c" 2>&1 | tee -a ./https/http$2_full
 echo -e "${yellow}"	2>&1 | tee -a ./https/http$2_full
-/home/baguette/bin/ffuf -w /home/baguette/wordlist/medlow.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e / -c 2>&1 | tee -a ./http/https$2_full
+$(which ffuf) -w /home/baguette/wordlist/medlow.txt -u https://$1:$2/FUZZ -mc 200,204,301,302,307,401,403 -e / -c 2>&1 | tee -a ./http/https$2_full
 echo -e "${none}"	2>&1 | tee -a ./http/https$2_full
-

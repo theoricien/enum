@@ -9,8 +9,6 @@ red = 		'\033[1;31m'
 yellow = 	'\033[0;33m'
 none = 		'\033[0m'
 
-PATH = "/home/baguette/bin/"
-
 # SERVICE = [PORTS]
 ftp = 	["21"]
 http = 	["80", "8000", "8080", "3000", "5080"] # 5985 == inutile
@@ -28,29 +26,29 @@ def check_args (ac, av):
 
 def schedule (ip, port):
 	if port in ftp:
-		os.system(PATH + "enum-ftp {}".format(ip))
+		os.system("enum-ftp {}".format(ip))
 	elif port in http:
-		os.system(PATH + "enum-http {} {}".format(ip, port))
+		os.system("enum-http {} {}".format(ip, port))
 	elif port in https:
-		os.system(PATH + "enum-https {} {}".format(ip, port))
+		os.system("enum-https {} {}".format(ip, port))
 	elif port in smb:
-		os.system(PATH + "enum-smb {}".format(ip))
+		os.system("enum-smb {}".format(ip))
 	elif port in snmp:
-		os.system(PATH + "enum-snmp {}".format(ip))
+		os.system("enum-snmp {}".format(ip))
 	elif port in dns:
-		os.system(PATH + "enum-dns {} {}".format(ip, port))
+		os.system("enum-dns {} {}".format(ip, port))
 	elif port in rpc:
 		print("https://book.hacktricks.xyz/pentesting/pentesting-rpcbind")
-		os.system(PATH + "enum-rpc {}".format(ip))
+		os.system("enum-rpc {}".format(ip))
 	elif port in msrpc:
 		print("https://book.hacktricks.xyz/pentesting/135-pentesting-msrpc")
-		os.system(PATH + "enum-msrpc {} {}".format(ip, port))
+		os.system("enum-msrpc {} {}".format(ip, port))
 
 def main (argc, argv):
 	check_args(argc, argv)
-	
+
 	os.setuid(0)
-	os.setgid(0)	
+	os.setgid(0)
 
 	ip = argv[1]
 	ports = argv[2].split(',')

@@ -7,17 +7,17 @@ none='\033[0m'
 
 if [ $# -eq 0 ]
 then
-	echo -e "${red} Usage example: enum 10.10.10.10"
+	echo -e "${red}Usage example: enum 10.10.10.10"
 	exit
 fi
 
 # OS
-/home/baguette/bin/os $1
+$(which os) $1
 
-/home/baguette/bin/enum-ports $1
+$(which enum-ports) $1
 ports=$(cat nmap/scheduler | cut -d '/' -f 1 | tr '\n' ',' | sed s/,$//)
 
-python3 /home/baguette/bin/enum-scheduler $1 "$ports"
+$(which python3) $(which enum-scheduler) $1 "$ports"
 
 echo -e "${cyan}==========( Done )=========="
 echo -e "${none}"

@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 cyan='\033[1;32m'
 red='\033[1;31m'
@@ -20,8 +20,8 @@ cat ./nmap/ports-raw | grep "^[0-9]*\/.*" | cut -d '/' -f 1 | tr '\n' ',' | sed 
 echo -e "${none}" | tee -a ./nmap/ports
 
 echo -e "${cyan}==========( Open UDP Ports (Top 400) )==========" | tee -a ./nmap/ports_udp
-echo -e "${red}nmap -v -p- -Pn -sU --top-ports 400 --max-scan-delay 5s --min-rate 1000 --max-retries 5000 -sS $1 | grep \"^[0-9]*\\/.*\" > nmap/ports${none}" | tee -a ./nmap/ports_udp
-$(which nmap)  -v -p- -Pn -sU --top-ports 400 --max-scan-delay 5s --min-rate 1000 --max-retries 5000 -sS $1 2>&1 > ./nmap/ports_udp-raw
+echo -e "${red}nmap -v -p- -Pn -sU --top-ports 400 --max-scan-delay 5s --min-rate 1000 --max-retries 5000 $1 | grep \"^[0-9]*\\/.*\" > nmap/ports${none}" | tee -a ./nmap/ports_udp
+$(which nmap)  -v -p- -Pn -sU --top-ports 400 --max-scan-delay 5s --min-rate 1000 --max-retries 5000 $1 2>&1 > ./nmap/ports_udp-raw
 
 cat ./nmap/ports_udp-raw | grep "open" | grep "^[0-9]*\/.*" | tee -a ./nmap/ports_udp
 cat ./nmap/ports_udp-raw | grep "open" | grep "^[0-9]*\/.*" | cut -d '/' -f 1 | tr '\n' ',' | sed 's/,$//g' >> ./nmap/scheduler
