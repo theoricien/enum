@@ -59,7 +59,7 @@ enum <ip>
 ```
 
 ## Output example on HTB/Bashed box
-![1](./img/1.png)
-![2](./img/2.png)
-![3](./img/3.png)
-![4](./img/4.png)
+![1](./img/1.PNG)
+![2](./img/2.PNG)
+![3](./img/3.PNG)
+![4](./img/4.PNG)
